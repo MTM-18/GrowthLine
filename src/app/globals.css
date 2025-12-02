@@ -1,26 +1,476 @@
 @import "tailwindcss";
 
+/* ===== Design tokens (used by Tailwind @theme) ===== */
+@theme {
+  /* Brand (green) */
+  --color-brand-50: #e7f6ef;
+  --color-brand-100: #c9ecd9;
+  --color-brand-200: #97dcb8;
+  --color-brand-300: #62c794;
+  --color-brand-400: #35b175;
+  --color-brand-500: #0e9f6e;
+  --color-brand-600: #0a7d57;
+  --color-brand-700: #0a6447;
+  --color-brand-800: #0b4f3a;
+  --color-brand-900: #0b3f2f;
+
+  /* Charcoal (text/surfaces) */
+  --color-charcoal-50: #f5f7f7;
+  --color-charcoal-100: #e8ebeb;
+  --color-charcoal-200: #cfd6d6;
+  --color-charcoal-300: #a8b2b2;
+  --color-charcoal-400: #7a8787;
+  --color-charcoal-500: #4a5a59;
+  --color-charcoal-600: #334140;
+  --color-charcoal-700: #263231;
+  --color-charcoal-800: #1a2322;
+  --color-charcoal-900: #0f1716;
+
+  /* Surfaces */
+  --color-surface: #020617;
+  --color-panel: #020617;
+  --color-border: #1f2937;
+
+  /* Typography */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI,
+    Roboto, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  --font-arabic: "Cairo", var(--font-sans);
+
+  /* Radii & shadow */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* ===== Global base ===== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html,
+body {
+  height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  background: radial-gradient(circle at top left,
+      #0f766e 0%,
+      #0f172a 40%,
+      #020617 100%);
+  background-attachment: fixed;
+  color: #e5e7eb;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: antialiased;
+  font-family: var(--font-sans);
+}
+
+/* ===== Helpers ===== */
+
+.brand-gradient {
+  background: linear-gradient(135deg,
+      var(--color-brand-600),
+      var(--color-brand-400));
+}
+
+.card {
+  background-color: rgba(15, 23, 42, 0.85);
+  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.lock-ltr {
+  direction: ltr;
+}
+
+.app-page-bg {
+  position: relative;
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+  color: #e5e7eb;
+}
+
+/* ===== Reusable Growth Line card ===== */
+
+.gl-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  padding: 1.25rem 1.5rem;
+  backdrop-filter: blur(18px);
+  width: 100%;
+  max-width: 100%;
+}
+
+.gl-card-lg {
+  padding: 1.5rem 1.75rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Top gradient line (animated) */
+.gl-card__topline {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(to right, #34d399, #22d3ee, #38bdf8);
+  opacity: 0.9;
+  background-size: 200% 100%;
+  animation: glToplineFlow 12s linear infinite;
+}
+
+@keyframes glToplineFlow {
+  0% {
+    background-position-x: 0%;
+  }
+
+  100% {
+    background-position-x: 200%;
+  }
+}
+
+.gl-card__title {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #f9fafb;
+}
+
+.gl-card__body {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgba(226, 232, 240, 0.9);
+}
+
+/* ===== Hero / motion utilities ===== */
+
+@layer utilities {
+  @keyframes glFloat {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+
+  .gl-float-slow {
+    animation: glFloat 9s ease-in-out infinite;
+  }
+
+  .gl-hero-orb {
+    width: 220px;
+    height: 220px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 30% 30%,
+        rgba(45, 212, 191, 0.55),
+        transparent);
+    filter: blur(1px);
+    opacity: 0.4;
+  }
+
+  .gl-hero-frame {
+    width: 260px;
+    height: 160px;
+    border-radius: 40px;
+    border: 1px solid rgba(45, 212, 191, 0.35);
+    background: linear-gradient(135deg,
+        rgba(15, 23, 42, 0.9),
+        rgba(22, 101, 52, 0.15));
+    opacity: 0.5;
+  }
+
+  /* Subtle animated grid */
+  .gl-hero-grid {
+    position: absolute;
+    inset: -40px;
+    background-image:
+      linear-gradient(to right,
+        rgba(148, 163, 184, 0.12) 1px,
+        transparent 1px),
+      linear-gradient(to bottom,
+        rgba(148, 163, 184, 0.12) 1px,
+        transparent 1px);
+    background-size: 80px 80px;
+    mix-blend-mode: soft-light;
+    opacity: 0.35;
+    animation: glGridShift 40s linear infinite;
+  }
+
+  @keyframes glGridShift {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+
+    100% {
+      transform: translate3d(-80px, -80px, 0);
+    }
+  }
+
+  /* Diagonal animated vector lines */
+  .gl-hero-vector {
+    position: absolute;
+    width: 420px;
+    height: 2px;
+    background: linear-gradient(to right,
+        rgba(45, 212, 191, 0),
+        rgba(45, 212, 191, 0.9),
+        rgba(56, 189, 248, 0));
+    opacity: 0.6;
+    filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.6));
+    pointer-events: none;
+  }
+
+  .gl-hero-vector-1 {
+    top: 20%;
+    left: 10%;
+    transform-origin: left center;
+    transform: rotate(-18deg);
+  }
+
+  .gl-hero-vector-2 {
+    bottom: 18%;
+    right: 12%;
+    transform-origin: right center;
+    transform: rotate(15deg);
+  }
+
+  /* Orbit ring + dot (hero only) */
+  .gl-hero-orbit-dot {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 260px;
+    height: 260px;
+    border-radius: 9999px;
+    border: 1px dashed rgba(148, 163, 184, 0.35);
+    pointer-events: none;
+  }
+
+  .gl-hero-orbit-dot::after {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, #a7f3d0, #22c55e);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+  }
+}
+
+/* ===== Global animated background layer (whole site) ===== */
+
+.gl-global-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  /* content wrapper will be z-10 */
+  overflow: hidden;
+  background: radial-gradient(circle at top left,
+      rgba(34, 197, 94, 0.18),
+      transparent 55%),
+    radial-gradient(circle at bottom right,
+      rgba(56, 189, 248, 0.16),
+      transparent 55%),
+    #020617;
+}
+
+/* animated grid */
+.gl-global-bg::before {
+  content: "";
+  position: absolute;
+  inset: -120px;
+  background-image:
+    linear-gradient(to right,
+      rgba(148, 163, 184, 0.06) 1px,
+      transparent 1px),
+    linear-gradient(to bottom,
+      rgba(148, 163, 184, 0.06) 1px,
+      transparent 1px);
+  background-size: 120px 120px;
+  mix-blend-mode: soft-light;
+  opacity: 0.35;
+  animation: glGlobalGridShift 50s linear infinite;
+}
+
+/* drifting diagonal "vector" band */
+.gl-global-bg::after {
+  content: "";
+  position: absolute;
+  width: 260%;
+  height: 260%;
+  left: -80%;
+  top: -80%;
+  background:
+    radial-gradient(circle at 20% 30%,
+      rgba(45, 212, 191, 0.22),
+      transparent 55%),
+    linear-gradient(120deg,
+      transparent 0%,
+      rgba(56, 189, 248, 0.22) 40%,
+      rgba(22, 163, 74, 0.32) 55%,
+      transparent 80%);
+  opacity: 0.38;
+  mix-blend-mode: screen;
+  filter: blur(2px);
+  animation: glGlobalVectorDrift 40s ease-in-out infinite alternate;
+}
+
+@keyframes glGlobalGridShift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-120px, -120px, 0);
+  }
+}
+
+@keyframes glGlobalVectorDrift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(8deg);
+  }
+
+  50% {
+    transform: translate3d(40px, 50px, 0) rotate(12deg);
+  }
+
+  100% {
+    transform: translate3d(-60px, -30px, 0) rotate(16deg);
+  }
+}
+
+/* ===== Global orbits floating around the app ===== */
+
+.gl-global-orbit {
+  position: fixed;
+  border-radius: 9999px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  animation: glGlobalOrbitSpin 60s linear infinite;
+  z-index: 1;
+  /* still behind content wrapper (z-10) */
+}
+
+.gl-global-orbit::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #a7f3d0, #22c55e);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.9);
+}
+
+/* top-right large orbit */
+.gl-global-orbit-1 {
+  width: 420px;
+  height: 420px;
+  top: -120px;
+  right: -40px;
+}
+
+/* bottom-left medium orbit */
+.gl-global-orbit-2 {
+  width: 320px;
+  height: 320px;
+  bottom: -80px;
+  left: 8%;
+  animation-duration: 70s;
+  animation-direction: reverse;
+}
+
+/* center-right subtle orbit */
+.gl-global-orbit-3 {
+  width: 560px;
+  height: 560px;
+  top: 40%;
+  right: -180px;
+  transform-origin: center;
+  opacity: 0.6;
+  animation-duration: 90s;
+}
+
+@keyframes glGlobalOrbitSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@layer utilities {
+  @keyframes clients-marquee {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  .animate-clients-marquee {
+    animation: clients-marquee 40s linear infinite;
+  }
+
+  .clients-logo-shadow {
+    box-shadow:
+      0 18px 40px rgba(15, 23, 42, 0.25),
+      0 0 0 1px rgba(148, 163, 184, 0.35);
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes clients-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-clients-marquee {
+  animation: clients-marquee 35s linear infinite;
 }
